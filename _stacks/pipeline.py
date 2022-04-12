@@ -127,7 +127,7 @@ class PipelineStack(Stack):
             env={
                 'AWS_ACCOUNT_ID': self.account,
                 'CONTAINER_IMAGE_NAME': ecr_repository_name,
-                'ECR_REPOSITORY_URI': ecr_repo_stage.ecr_repo.repository_uri
+                # 'ECR_REPOSITORY_URI': ecr_repo_stage.ecr_repo.repository_uri
             }
         )
 
@@ -136,6 +136,7 @@ class PipelineStack(Stack):
             post=[build_container_project],
         )
 
+        # TODO
         # ecr_repo_actions = ["ecr:PutImage",
         #                     "ecr:BatchCheckLayerAvailability",
         #                     "ecr:CompleteLayerUpload",
@@ -175,9 +176,10 @@ class EcrRepositoryStage(aws_cdk.Stage):
     def ecr_repo_stack(self):
         return self.__ecr_repo_stack
 
-    @property
-    def ecr_repo(self):
-        return self.__ecr_repo_stack.ecr_repo
+    # TODO
+    # @property
+    # def ecr_repo(self):
+    #     return self.__ecr_repo_stack.ecr_repo
 
 
 class EcrRepositoryStack(aws_cdk.Stack):
@@ -203,7 +205,8 @@ class EcrRepositoryStack(aws_cdk.Stack):
             # lifecycle_rules=[removal_old_image]  # imageの世代管理
         )
 
-    @property
-    def ecr_repo(self):
-        return self.__ecr_repo
+    # TODO
+    # @property
+    # def ecr_repo(self):
+    #     return self.__ecr_repo
 

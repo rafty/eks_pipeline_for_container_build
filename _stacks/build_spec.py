@@ -18,7 +18,6 @@ build_spec_object = {
                     'echo $AWS_DEFAULT_REGION',
                     'echo $AWS_ACCOUNT_ID',
                     'echo $CONTAINER_IMAGE_NAME',
-                    'echo $ECR_REPOSITORY_URI',
                     'aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com',
                     'echo --- Logging in to DockerHub ---',
                     'DOCKERHUB_USER_ID=$(aws --region="$AWS_DEFAULT_REGION" ssm get-parameters --names "/CodeBuild/DOCKERHUB_USER_ID" | jq --raw-output ".Parameters[0].Value")',
@@ -41,7 +40,9 @@ build_spec_object = {
         "post_build": {
             "commands": [
                     'echo --- Pushing the Docker images ---',
-                    'docker push $ECR_REPOSITORY_URI:$IMAGE_TAG',
+                    'ECR_URI=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com',
+                    'echo $ECR_URI'
+                    'docker push $ECR_URI/$CONTAINER_IMAGE_NAME:$IMAGE_TAG',
                     'echo --- Build completed ---',
             ],
         },
