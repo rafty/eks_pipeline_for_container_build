@@ -70,13 +70,13 @@ class PipelineStack(Stack):
 
         # StageがSORCEを取得できないので追加してみた 2022.04.12 17:51
         # TODO 必要ないかも・・・
-        codebuild_policy = aws_iam.PolicyStatement(
-            actions=[
-                'codebuild:*',
-            ],
-            effect=aws_iam.Effect.ALLOW,
-            resources=['*']
-        )
+        # codebuild_policy = aws_iam.PolicyStatement(
+        #     actions=[
+        #         'codebuild:*',
+        #     ],
+        #     effect=aws_iam.Effect.ALLOW,
+        #     resources=['*']
+        # )
         ecr_policy = aws_iam.PolicyStatement(
             actions=[
                 'ecr:PutImage',
@@ -127,7 +127,6 @@ class PipelineStack(Stack):
             env={
                 'AWS_ACCOUNT_ID': self.account,
                 'CONTAINER_IMAGE_NAME': ecr_repository_name,
-                # 'ECR_REPOSITORY_URI': ecr_repo_stage.ecr_repo.repository_uri
             }
         )
 
