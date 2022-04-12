@@ -17,20 +17,30 @@ class PipelineStack(Stack):
     def __init__(self, scope: Construct, construct_id: str, env: aws_cdk.Environment, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
+        # ---------------------------------------------------------
+        #  CDK Context from cdk.json
+        # ---------------------------------------------------------
         repository_name = self.node.try_get_context('github_repository_name')
         github_connection_arn = self.node.try_get_context('github_connection_arn')
 
+        # ---------------------------------------------------------
+        #  GitHub Connection
+        # ---------------------------------------------------------
         github_connection = CodePipelineSource.connection(
             repo_string=repository_name,
             branch='master',
             connection_arn=github_connection_arn
         )
 
+        # ---------------------------------------------------------
+        #  Pipeline
+        #  Stage: Source, Build, UpdatePipeline
+        # ---------------------------------------------------------
         ecr_pipeline = CodePipeline(
             scope=self,
             id='EcrPipeline',
             pipeline_name='ecr_pipeline',
-            # self_mutation=False,  # UpdatePipeline　Stageがなくなる。
+            # self_mutation=False,  # without UpdatePipeline　Stage
             synth=ShellStep(
                 id='Synth',
                 input=github_connection,
@@ -43,20 +53,10 @@ class PipelineStack(Stack):
         )
 
         # ---------------------------------------------------------
-        #  Stage 追加
-        #  ECR Repository作成 と Docker Build & Push
+        #  Additional Stage
+        #  Stack: CDK Create ECR Repository
+        #  docker Build & Push
         # ---------------------------------------------------------
-
-        # ecr_repository_name = self.node.try_get_context('ecr_repository_name')
-        #
-        # ecr_repo = aws_ecr.Repository(
-        #     self,
-        #     'SamplePythonAppRepo',
-        #     repository_name=ecr_repository_name,
-        #     image_scan_on_push=True,  # Image Scan
-        #     # removal_policy=aws_cdk.RemovalPolicy.DESTROY, # stack削除時の動作
-        #     # lifecycle_rules=[removal_old_image]  # imageの世代管理
-        # )
 
         # ---------------------------------------------------------
         #  Stage にはStackとStepを追加する
@@ -67,16 +67,6 @@ class PipelineStack(Stack):
         # ----------------------------------------
         # Stage - Policy
         # ----------------------------------------
-
-        # StageがSORCEを取得できないので追加してみた 2022.04.12 17:51
-        # TODO 必要ないかも・・・
-        # codebuild_policy = aws_iam.PolicyStatement(
-        #     actions=[
-        #         'codebuild:*',
-        #     ],
-        #     effect=aws_iam.Effect.ALLOW,
-        #     resources=['*']
-        # )
         ecr_policy = aws_iam.PolicyStatement(
             actions=[
                 'ecr:PutImage',
@@ -103,7 +93,7 @@ class PipelineStack(Stack):
 
         ecr_repo_stage = EcrRepositoryStage(
             scope=self,
-            construct_id='SampleAppEcrRepoStage',
+            construct_id='SampleAppEcrRepoStage',  #
             env=env
         )
 
@@ -170,15 +160,10 @@ class EcrRepositoryStage(aws_cdk.Stage):
             construct_id=construct_id,
             env=env
         )
-
-    @property
-    def ecr_repo_stack(self):
-        return self.__ecr_repo_stack
-
     # TODO
     # @property
-    # def ecr_repo(self):
-    #     return self.__ecr_repo_stack.ecr_repo
+    # def ecr_repo_stack(self):
+    #     return self.__ecr_repo_stack
 
 
 class EcrRepositoryStack(aws_cdk.Stack):
@@ -203,9 +188,3 @@ class EcrRepositoryStack(aws_cdk.Stack):
             # removal_policy=aws_cdk.RemovalPolicy.DESTROY, # stack削除時の動作
             # lifecycle_rules=[removal_old_image]  # imageの世代管理
         )
-
-    # TODO
-    # @property
-    # def ecr_repo(self):
-    #     return self.__ecr_repo
-
