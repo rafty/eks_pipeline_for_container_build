@@ -119,7 +119,7 @@ class PipelineStack(Stack):
             partial_build_spec=build_spec,
             commands=[],  # need empty by partial_build_spec,
             role_policy_statements=[
-                codebuild_policy,
+                # codebuild_policy,  # TODO
                 ecr_policy,
                 logs_policy,
                 ssm_policy
