@@ -25,6 +25,7 @@ build_spec_object = {
         "build": {
             "commands": [
                     'echo --- Building Docker image ---',
+                    'cd app',
                     'COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-8)',
                     'IMAGE_TAG=$(date +%Y-%m-%dH%H.%M.%S)-${COMMIT_HASH:=latest}',
                     'docker build --no-cache -t $CONTAINER_IMAGE_NAME .',
