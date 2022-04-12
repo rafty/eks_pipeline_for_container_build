@@ -30,18 +30,18 @@ build_spec_object = {
             "commands": [
                     'echo --- Building Docker image ---',
                     'cd app',
+                    'ECR_URI=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com',
+                    'echo $ECR_URI'
                     'COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-8)',
                     'IMAGE_TAG=$(date +%Y-%m-%dH%H.%M.%S)-${COMMIT_HASH:=latest}',
                     'docker build --no-cache -t $CONTAINER_IMAGE_NAME .',
-                    'docker tag $CONTAINER_IMAGE_NAME:latest $CONTAINER_IMAGE_NAME:$IMAGE_TAG',
+                    'docker tag $CONTAINER_IMAGE_NAME:latest $ECR_URI/$CONTAINER_IMAGE_NAME:$IMAGE_TAG',
             ],
         },
 
         "post_build": {
             "commands": [
                     'echo --- Pushing the Docker images ---',
-                    'ECR_URI=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com',
-                    'echo $ECR_URI'
                     'docker push $ECR_URI/$CONTAINER_IMAGE_NAME:$IMAGE_TAG',
                     'echo --- Build completed ---',
             ],
