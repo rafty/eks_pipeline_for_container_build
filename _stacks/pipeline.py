@@ -113,7 +113,7 @@ class PipelineStack(Stack):
         build_container_project = CodeBuildStep(
             id='DockerBuildStep',
             build_environment=aws_codebuild.BuildEnvironment(
-                                build_image=aws_codebuild.LinuxBuildImage.STANDARD_5_0,
+                                build_image=aws_codebuild.LinuxBuildImage.STANDARD_4_0,
                                 privileged=True),  # for docker build
             input=github_connection,
             partial_build_spec=build_spec,

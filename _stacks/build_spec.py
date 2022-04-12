@@ -7,6 +7,9 @@ build_spec_object = {
                     "python": 3.8,
                     "docker": 19
             },
+            "commands": [
+                'echo --- build spec install ---',
+            ]
         },
 
         "pre_build": {
