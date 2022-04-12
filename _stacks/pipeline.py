@@ -30,7 +30,7 @@ class PipelineStack(Stack):
             scope=self,
             id='EcrPipeline',
             pipeline_name='ecr_pipeline',
-            # self_mutation=False,
+            # self_mutation=False,  # UpdatePipeline　Stageがなくなる。
             synth=ShellStep(
                 id='Synth',
                 input=github_connection,
@@ -94,7 +94,7 @@ class PipelineStack(Stack):
 
         ecr_repo_stage = EcrRepositoryStage(
             scope=self,
-            construct_id='SampleAppRcrRepoStage',
+            construct_id='SampleAppEcrRepoStage',
             env=env
         )
 
