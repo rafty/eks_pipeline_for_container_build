@@ -69,6 +69,7 @@ class PipelineStack(Stack):
         # ----------------------------------------
 
         # StageがSORCEを取得できないので追加してみた 2022.04.12 17:51
+        # TODO 必要ないかも・・・
         codebuild_policy = aws_iam.PolicyStatement(
             actions=[
                 'codebuild:*',
@@ -78,7 +79,6 @@ class PipelineStack(Stack):
         )
         ecr_policy = aws_iam.PolicyStatement(
             actions=[
-                # 'codebuild:*',
                 'ecr:PutImage',
                 'ecr:BatchCheckLayerAvailability',
                 'ecr:CompleteLayerUpload',
@@ -127,6 +127,7 @@ class PipelineStack(Stack):
             env={
                 'AWS_ACCOUNT_ID': self.account,
                 'CONTAINER_IMAGE_NAME': ecr_repository_name,
+                'ECR_REPOSITORY_URI': ecr_repo_stage.ecr_repo.repository_uri
             }
         )
 
@@ -174,6 +175,10 @@ class EcrRepositoryStage(aws_cdk.Stage):
     def ecr_repo_stack(self):
         return self.__ecr_repo_stack
 
+    @property
+    def ecr_repo(self):
+        return self.__ecr_repo_stack.ecr_repo
+
 
 class EcrRepositoryStack(aws_cdk.Stack):
     # ---------------------------------------------------------
@@ -189,7 +194,7 @@ class EcrRepositoryStack(aws_cdk.Stack):
         super().__init__(scope, construct_id, **kwargs)
 
         ecr_repository_name = self.node.try_get_context('ecr_repository_name')
-        aws_ecr.Repository(
+        self.__ecr_repo = aws_ecr.Repository(
             scope=self,
             id=f'{ecr_repository_name}-Stack',
             repository_name=ecr_repository_name,
@@ -197,4 +202,8 @@ class EcrRepositoryStack(aws_cdk.Stack):
             # removal_policy=aws_cdk.RemovalPolicy.DESTROY, # stack削除時の動作
             # lifecycle_rules=[removal_old_image]  # imageの世代管理
         )
+
+    @property
+    def ecr_repo(self):
+        return self.__ecr_repo
 
