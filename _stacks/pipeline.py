@@ -30,7 +30,7 @@ class PipelineStack(Stack):
             scope=self,
             id='EcrPipeline',
             pipeline_name='ecr_pipeline',
-            self_mutation=False,
+            # self_mutation=False,
             synth=ShellStep(
                 id='Synth',
                 input=github_connection,
