@@ -67,6 +67,15 @@ class PipelineStack(Stack):
         # ----------------------------------------
         # Stage - Policy
         # ----------------------------------------
+
+        # StageがSORCEを取得できないので追加してみた 2022.04.12 17:51
+        codebuild_policy = aws_iam.PolicyStatement(
+            actions=[
+                'codebuild:*',
+            ],
+            effect=aws_iam.Effect.ALLOW,
+            resources=['*']
+        )
         ecr_policy = aws_iam.PolicyStatement(
             actions=[
                 # 'codebuild:*',
@@ -100,6 +109,7 @@ class PipelineStack(Stack):
 
         build_spec = aws_codebuild.BuildSpec.from_object(build_spec_object)
         ecr_repository_name = self.node.try_get_context('ecr_repository_name')
+
         build_container_project = CodeBuildStep(
             id='DockerBuildStep',
             build_environment=aws_codebuild.BuildEnvironment(
@@ -109,6 +119,7 @@ class PipelineStack(Stack):
             partial_build_spec=build_spec,
             commands=[],  # need empty by partial_build_spec,
             role_policy_statements=[
+                codebuild_policy,
                 ecr_policy,
                 logs_policy,
                 ssm_policy
@@ -178,12 +189,12 @@ class EcrRepositoryStack(aws_cdk.Stack):
         super().__init__(scope, construct_id, **kwargs)
 
         ecr_repository_name = self.node.try_get_context('ecr_repository_name')
-        # aws_ecr.Repository(
-        #     scope=self,
-        #     id=f'{ecr_repository_name}-Stack',
-        #     repository_name=ecr_repository_name,
-        #     image_scan_on_push=True,  # Image Scan
-        #     # removal_policy=aws_cdk.RemovalPolicy.DESTROY, # stack削除時の動作
-        #     # lifecycle_rules=[removal_old_image]  # imageの世代管理
-        # )
+        aws_ecr.Repository(
+            scope=self,
+            id=f'{ecr_repository_name}-Stack',
+            repository_name=ecr_repository_name,
+            image_scan_on_push=True,  # Image Scan
+            # removal_policy=aws_cdk.RemovalPolicy.DESTROY, # stack削除時の動作
+            # lifecycle_rules=[removal_old_image]  # imageの世代管理
+        )
 
