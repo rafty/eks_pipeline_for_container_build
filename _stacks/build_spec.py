@@ -5,8 +5,7 @@ build_spec_object = {
         "install": {
             "runtime-versions": {
                     "python": 3.8,
-                    # "docker": 19
-                    "docker": "latest"
+                    "docker": 19
             },
             "commands": [
                 'echo --- build spec install ---',
