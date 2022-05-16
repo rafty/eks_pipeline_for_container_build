@@ -7,6 +7,6 @@ COPY --from=builder /root/.local /root/.local
 COPY --from=builder /src .
 
 ENV PATH=/root/.local:$PATH
-EXPOSE 5000
+EXPOSE 8080
 
 CMD ["python3", "app.py"]

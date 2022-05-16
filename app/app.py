@@ -15,7 +15,7 @@ def hello():
     return 'Hello World!'
 
 
-@app.route('/v1/bestmusic/90s/<string:artist>')
+@app.route('/v1/music/90s/<string:artist>')
 def get_artist(artist):
     resp = dynamo_client.get_item(
         TableName=table_name,
@@ -33,7 +33,7 @@ def get_artist(artist):
     })
 
 
-@app.route('/v1/bestmusic/90s', methods=['POST'])
+@app.route('/v1/music/90s', methods=['POST'])
 def create_artist():
     artist = request.json.get('artist')
     song = request.json.get('song')
@@ -55,4 +55,4 @@ def create_artist():
 
 
 if __name__ == '__main__':
-    app.run(threaded=True, host='0.0.0.0', port=5000)
+    app.run(threaded=True, host='0.0.0.0', port=8080, debug=True)

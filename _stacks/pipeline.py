@@ -52,20 +52,12 @@ class PipelineStack(Stack):
             )
         )
 
-        # ---------------------------------------------------------
-        #  Additional Stage
-        #  Stack: CDK Create ECR Repository
-        #  docker Build & Push
-        # ---------------------------------------------------------
-
-        # ---------------------------------------------------------
-        #  Stage にはStackとStepを追加する
-        #  StackはCDK Stackのことである。
-        #  StageにCDK Stackを入れる
-        # ---------------------------------------------------------
+        # ----------------------------------------
+        #  以下、追加のStage
+        # ----------------------------------------
 
         # ----------------------------------------
-        # Stage - Policy
+        # Steps - Policy
         # ----------------------------------------
         ecr_policy = aws_iam.PolicyStatement(
             actions=[
@@ -93,7 +85,7 @@ class PipelineStack(Stack):
 
         ecr_repo_stage = EcrRepositoryStage(
             scope=self,
-            construct_id='SampleAppEcrRepoStage',  #
+            construct_id='SampleAppEcrRepoStage',
             env=env
         )
 
@@ -109,7 +101,6 @@ class PipelineStack(Stack):
             partial_build_spec=build_spec,
             commands=[],  # need empty by partial_build_spec,
             role_policy_statements=[
-                # codebuild_policy,  # TODO
                 ecr_policy,
                 logs_policy,
                 ssm_policy
@@ -132,19 +123,19 @@ class PipelineStack(Stack):
         #                     "ecr:InitiateLayerUpload",
         #                     "ecr:UploadLayerPart"]
         #
-        # for perm in ecr_repo_actions:
-        #     ecr_repo.grant(buildContainerProject, perm)
+        # for action in ecr_repo_actions:
+        #     ecr_repo.grant(build_container_project, action)
         #
         # _iam.Grant.add_to_principal(
         #     actions=["ecr:GetAuthorizationToken"],
         #     resource_arns=["*"],
-        #     grantee=buildContainerProject
+        #     grantee=build_container_project
         # )
 
 
 class EcrRepositoryStage(aws_cdk.Stage):
     # ---------------------------------------------------------
-    #  Stage にはStackとStepを追加する
+    #  Stage
     #  StackはCDK Stackのことである。
     #  StageにCDK Stackを入れる
     # ---------------------------------------------------------
@@ -160,10 +151,6 @@ class EcrRepositoryStage(aws_cdk.Stage):
             construct_id=construct_id,
             env=env
         )
-    # TODO
-    # @property
-    # def ecr_repo_stack(self):
-    #     return self.__ecr_repo_stack
 
 
 class EcrRepositoryStack(aws_cdk.Stack):
